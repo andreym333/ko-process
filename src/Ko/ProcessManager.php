@@ -118,7 +118,7 @@ class ProcessManager implements \Countable
         foreach ($this->children as $process) {
             $process->kill();
         }
-        
+
         $this->internalEmit('shutdown');
     }
 
@@ -219,10 +219,12 @@ class ProcessManager implements \Countable
     /**
      * Suspends execution of the current process until all children has exited, or until a signal is delivered whose
      * action is to terminate the current process.
+     *
+     * @param int $maxChildren How many child processes can keep running
      */
-    public function wait()
+    public function wait(int $maxChildren = 0)
     {
-        while ($this->hasAlive()) {
+        while (count($this->children) > $maxChildren) {
             $this->dispatch();
             usleep(100000);
         }
