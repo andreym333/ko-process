@@ -243,14 +243,23 @@ class Process implements \ArrayAccess, \Countable
     public function wait()
     {
         $this->internalWait();
+
+        $this->emitExitEvents();
+
+        return $this;
+    }
+
+    /**
+     * @internal
+     */
+    public function emitExitEvents()
+    {
         $event = $this->isSuccessExit()
             ? 'success'
             : 'error';
 
         $this->internalEmit('exit', $this->pid);
         $this->internalEmit($event);
-
-        return $this;
     }
 
     protected function internalWait()

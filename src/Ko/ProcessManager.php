@@ -97,7 +97,11 @@ class ProcessManager implements \Countable
     public function handleSigChild()
     {
         while (($pid = pcntl_waitpid(-1, $status, WNOHANG)) > 0) {
-            $this->childProcessDie($pid, $status);
+            if (isset($this->children[$pid])) {
+                $p = $this->children[$pid];
+                $p->setStatus($status);
+                $p->emitExitEvents();
+            }
         }
 
         //INFO Fix issue https://github.com/misterion/ko-process/pull/15
