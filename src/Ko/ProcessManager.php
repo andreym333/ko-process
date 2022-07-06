@@ -113,13 +113,28 @@ class ProcessManager implements \Countable
      */
     public function handleSigTerm()
     {
+        if ($this->sigTerm) {
+            return;
+        }
         $this->sigTerm = true;
 
         foreach ($this->children as $process) {
             $process->kill();
         }
 
+        $this->wait();
+
         $this->internalEmit('shutdown');
+
+        exit;
+    }
+
+    /**
+     * Terminates child processes and process manager itself.
+     */
+    public function shutdown()
+    {
+        $this->handleSigTerm();
     }
 
     protected function childProcessDie($pid, $status)
