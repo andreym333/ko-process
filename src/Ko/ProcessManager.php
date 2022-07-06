@@ -109,6 +109,22 @@ class ProcessManager implements \Countable
     }
 
     /**
+     * Sends signal to all children.
+     *
+     * @param int $signal
+     *
+     * @return $this
+     */
+    public function broadcast(int $signal)
+    {
+        foreach ($this->children as $process) {
+            $process->kill($signal);
+        }
+
+        return $this;
+    }
+
+    /**
      * @internal
      */
     public function handleSigTerm()
@@ -118,9 +134,7 @@ class ProcessManager implements \Countable
         }
         $this->sigTerm = true;
 
-        foreach ($this->children as $process) {
-            $process->kill();
-        }
+        $this->broadcast(SIGTERM);
 
         $this->wait();
 
