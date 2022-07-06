@@ -192,6 +192,8 @@ class ProcessManager implements \Countable
     {
         $p->setReady(false);
 
+        $parentPid = getmypid();
+
         $pid = pcntl_fork();
         if (-1 === $pid) {
             throw new \RuntimeException('Failure on pcntl_fork');
@@ -201,10 +203,12 @@ class ProcessManager implements \Countable
             $this->children[$pid] = $p;
 
             return $p->setPid($pid)
+                ->setParentPid($parentPid)
                 ->waitReady();
         }
 
         $p->setPid(getmypid())
+            ->setParentPid($parentPid)
             ->run();
 
         exit(0);

@@ -70,6 +70,13 @@ class Process implements \ArrayAccess, \Countable
     protected $pid;
 
     /**
+     * Posix parent process id.
+     *
+     * @var int
+     */
+    protected $parentPid;
+
+    /**
      * @var int
      */
     protected $status;
@@ -203,6 +210,38 @@ class Process implements \ArrayAccess, \Countable
         $this->pid = $pid;
 
         return $this;
+    }
+
+    /**
+     * Return the parent process ID.
+     *
+     * @return integer
+     */
+    public function getParentPid()
+    {
+        return $this->parentPid;
+    }
+
+    /**
+     * Set the parent process ID.
+     *
+     * @param integer $parentPid
+     *
+     * @return $this
+     */
+    public function setParentPid($parentPid)
+    {
+        $this->parentPid = $parentPid;
+
+        return $this;
+    }
+
+    /**
+     * Checks if the parent process no longer exists.
+     */
+    public function parentIsGone()
+    {
+        return $this->parentPid && $this->parentPid != posix_getppid();
     }
 
     /**
