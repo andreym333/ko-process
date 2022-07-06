@@ -341,7 +341,7 @@ class Process implements \ArrayAccess, \Countable
     public function dispatch()
     {
         $this->getSignalHandler()
-            ->dispatch();
+            ->dispatch($this);
 
         return $this;
     }

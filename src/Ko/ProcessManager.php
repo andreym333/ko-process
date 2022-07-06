@@ -70,18 +70,18 @@ class ProcessManager implements \Countable
      */
     protected $signalHandler;
 
-    public function __construct()
+    public function __construct(SignalHandler $signalHandler = null)
     {
         $this->children = [];
         $this->spawnWatch = [];
         $this->sigTerm = false;
 
-        $this->setupSignalHandlers();
+        $this->setupSignalHandlers($signalHandler);
     }
 
-    protected function setupSignalHandlers()
+    protected function setupSignalHandlers(SignalHandler $signalHandler = null)
     {
-        $this->signalHandler = new SignalHandler();
+        $this->signalHandler = $signalHandler ?? new SignalHandler();
         $this->signalHandler->registerHandler(SIGCHLD, function() {
             $this->handleSigChild();
         });
@@ -312,7 +312,7 @@ class ProcessManager implements \Countable
      */
     public function dispatch()
     {
-        $this->signalHandler->dispatch();
+        $this->signalHandler->dispatch($this);
         return $this;
     }
 }

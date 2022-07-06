@@ -75,7 +75,6 @@ class SignalHandler implements \Countable
         $this->handlers = [];
 
         $this->signalQueue = new \SplQueue();
-        $this->signalQueue->setIteratorMode(\SplQueue::IT_MODE_DELETE);
     }
 
     /**
@@ -132,15 +131,21 @@ class SignalHandler implements \Countable
     /**
      * Execute `pcntl_signal_dispatch` and process all registered handlers.
      *
+     * @param mixed ...$args Additional parameters passed to signal handlers.
+     *
      * @return $this
      */
-    public function dispatch()
+    public function dispatch(...$args)
     {
         pcntl_signal_dispatch();
 
-        foreach ($this->signalQueue as $signal) {
+        while (!$this->signalQueue->isEmpty()) {
+            $signal = $this->signalQueue->dequeue();
             foreach ($this->handlers[$signal] as &$callable) {
-                call_user_func($callable, $signal);
+                $result = call_user_func($callable, $signal, ...$args);
+                if ($result === false) {
+                    break;
+                }
             }
         }
 
