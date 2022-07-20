@@ -253,11 +253,12 @@ class ProcessManager implements \Countable
      * Suspends execution of the current process until all children has exited, or until a signal is delivered whose
      * action is to terminate the current process.
      *
-     * @param int $maxChildren How many child processes can keep running
+     * @param callable $waitCondition Optional. Changes the default condition (hasAlive) in a wait loop.
      */
-    public function wait(int $maxChildren = 0)
+    public function wait(callable $waitCondition = null)
     {
-        while (count($this->children) > $maxChildren) {
+        $waitCondition ??= [$this, 'hasAlive'];
+        while ($waitCondition(count($this->children))) {
             $this->dispatch();
             usleep(100000);
         }
