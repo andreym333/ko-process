@@ -151,6 +151,14 @@ class ProcessManager implements \Countable
         $this->handleSigTerm();
     }
 
+    /**
+     * Checks if the process manager has received the SIGTERM signal.
+     */
+    public function inShutdownState()
+    {
+        return $this->sigTerm;
+    }
+
     protected function childProcessDie($pid, $status)
     {
         unset($this->children[$pid]);
@@ -348,5 +356,15 @@ class ProcessManager implements \Countable
     {
         $this->signalHandler->dispatch($this);
         return $this;
+    }
+
+    /**
+     * Sets an alarm clock for delivery of a signal.
+     *
+     * @return int
+     */
+    public function setAlarmTimeout(int $seconds)
+    {
+        return pcntl_alarm($seconds);
     }
 }

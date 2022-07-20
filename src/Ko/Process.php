@@ -348,6 +348,19 @@ class Process implements \ArrayAccess, \Countable
     }
 
     /**
+     * Setup exit handler.
+     *
+     * @param callable $callable
+     *
+     * @return $this
+     */
+    public function onExit(callable $callable)
+    {
+        $this->internalOn('exit', $callable);
+        return $this;
+    }
+
+    /**
      * Send a signal to a process.
      *
      * @param int $signal
