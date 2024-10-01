@@ -297,8 +297,8 @@ class Process implements \ArrayAccess, \Countable
             ? 'success'
             : 'error';
 
-        $this->internalEmit('exit', $this->pid);
-        $this->internalEmit($event);
+        $this->internalEmit($event, $this);
+        $this->internalEmit('exit', $this);
     }
 
     protected function internalWait()
